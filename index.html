@@ -1,48 +1,79 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>TeraBox Downloader</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@next/css/pico.min.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>TeraBox Video Downloader</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f2f2f2;
+      margin: 0;
+      padding: 40px;
+      text-align: center;
+    }
+    h1 {
+      color: #222;
+    }
+    input {
+      width: 90%;
+      max-width: 600px;
+      padding: 12px;
+      margin: 20px 0;
+      font-size: 16px;
+    }
+    button {
+      padding: 12px 25px;
+      font-size: 16px;
+      background-color: #007BFF;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    #result {
+      margin-top: 30px;
+      padding: 15px;
+      background-color: #fff;
+      border: 1px solid #ccc;
+      display: none;
+    }
+  </style>
 </head>
-<body class="container">
+<body>
+
   <h1>TeraBox Downloader</h1>
+  <p>Paste your TeraBox share link below to get the video</p>
+  <input type="text" id="linkInput" placeholder="Paste your TeraBox link here..." />
+  <br />
+  <button onclick="download()">Download</button>
 
-  <form id="form">
-    <input type="url" id="link" placeholder="Paste your TeraBox link here" required style="width:100%">
-    <button type="submit">Get Download Links</button>
-  </form>
+  <div id="result">
+    <p><strong>Direct Download Link:</strong></p>
+    <a id="downloadLink" href="#" target="_blank">Click here to download</a>
+  </div>
 
-  <article id="result" style="display:none; margin-top:1rem"></article>
+  <script>
+    function download() {
+      const link = document.getElementById("linkInput").value.trim();
+      if (!link) {
+        alert("Please paste a TeraBox link.");
+        return;
+      }
 
-<script>
-// Public Cloudflare Worker endpoint; change if it goes offline
-const API = "https://teraboxapi.darknightdev.workers.dev/?url=";
-document.getElementById('form').addEventListener('submit', async e => {
-  e.preventDefault();
-  const url = document.getElementById('link').value.trim();
-  if (!url) return;
+      // This is a simulated conversion
+      // Replace this with real backend API integration
+      const fakeId = link.split("/s/")[1]?.split("?")[0];
+      const downloadURL = "https://api.fake-terabox-downloader.com/file/" + fakeId;
 
-  const resBox = document.getElementById('result');
-  resBox.style.display = 'block';
-  resBox.innerHTML = "Fetching… ⏳";
-  try {
-    const resp = await fetch(API + encodeURIComponent(url));
-    const data = await resp.json();
+      // Show the result (simulated)
+      document.getElementById("result").style.display = "block";
+      document.getElementById("downloadLink").href = downloadURL;
+      document.getElementById("downloadLink").textContent = downloadURL;
+    }
+  </script>
 
-    if (data.error) throw new Error(data.error);
-
-    resBox.innerHTML = `
-      <h3>\${data.file_name}</h3>
-      <p><strong>Size:</strong> \${data.file_size}</p>
-      <p><a href="\${data.download_link}" target="_blank">➡️ Download Link</a></p>
-      \${data.thumbnail ? `<img src="\${data.thumbnail}" alt="Thumbnail" style="max-width:300px;">` : ''}
-    `;
-  } catch (err) {
-    resBox.innerHTML = "❌ " + err.message;
-  }
-});
-</script>
 </body>
 </html>
