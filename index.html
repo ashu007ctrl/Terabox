@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TeraBox Downloader</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@next/css/pico.min.css">
+</head>
+<body class="container">
+  <h1>TeraBox Downloader</h1>
+
+  <form id="form">
+    <input type="url" id="link" placeholder="Paste your TeraBox link here" required style="width:100%">
+    <button type="submit">Get Download Links</button>
+  </form>
+
+  <article id="result" style="display:none; margin-top:1rem"></article>
+
+<script>
+// Public Cloudflare Worker endpoint; change if it goes offline
+const API = "https://teraboxapi2.darkhacker7301.workers.dev/?url=";
+
+document.getElementById('form').addEventListener('submit', async e => {
+  e.preventDefault();
+  const url = document.getElementById('link').value.trim();
+  if (!url) return;
+
+  const resBox = document.getElementById('result');
+  resBox.style.display = 'block';
+  resBox.innerHTML = "Fetching… ⏳";
+  try {
+    const resp = await fetch(API + encodeURIComponent(url));
+    const data = await resp.json();
+
+    if (data.error) throw new Error(data.error);
+
+    resBox.innerHTML = `
+      <h3>\${data.file_name}</h3>
+      <p><strong>Size:</strong> \${data.file_size}</p>
+      <p><a href="\${data.download_link}" target="_blank">➡️ Download Link</a></p>
+      \${data.thumbnail ? `<img src="\${data.thumbnail}" alt="Thumbnail" style="max-width:300px;">` : ''}
+    `;
+  } catch (err) {
+    resBox.innerHTML = "❌ " + err.message;
+  }
+});
+</script>
+</body>
+</html>
